@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { generatePetRecommendations, generatePetTasks } from '@/lib/ai';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +9,16 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@radix-ui/react-label';
+
+interface Pet {
+  id: string;
+  name: string;
+  type: string;
+  breed: string;
+  age: string;
+  weight: string;
+  level: number;
+}
 
 export default function AddPetForm() {
   const router = useRouter();
@@ -56,12 +66,48 @@ export default function AddPetForm() {
   };
 
   const handleStartCaring = () => {
+    // Создаем уникальный ID для нового питомца
+    const petId = Date.now().toString();
+    
+    // Создаем объект питомца
+    const newPet: Pet = {
+      id: petId,
+      ...petInfo,
+      level: 1
+    };
+
+    // Загружаем существующих питомцев
+    const savedPets = localStorage.getItem('pets');
+    const pets = savedPets ? JSON.parse(savedPets) : [];
+    
+    // Добавляем нового питомца
+    pets.push(newPet);
+    localStorage.setItem('pets', JSON.stringify(pets));
+    
+    // Устанавливаем нового питомца как текущего
+    localStorage.setItem('currentPetId', petId);
+
+    // Сохраняем данные питомца
     const petData = {
       pet: petInfo,
       recommendations,
       tasks
     };
+    
+    localStorage.setItem(`petCareData_${petId}`, JSON.stringify(petData));
     localStorage.setItem('petCareData', JSON.stringify(petData));
+    
+    // Создаем начальный статус для нового питомца
+    const initialStatus = {
+      happiness: 100,
+      energy: 100,
+      hunger: 100,
+      health: 100,
+      lastUpdate: Date.now()
+    };
+    
+    localStorage.setItem(`petStatus_${petId}`, JSON.stringify(initialStatus));
+    localStorage.setItem('petStatus', JSON.stringify(initialStatus));
     
     setShowDialog(false);
     router.push('/tasks');

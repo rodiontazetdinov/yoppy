@@ -1,6 +1,3 @@
-const MISTRAL_API_KEY = 'H8JUDXVXijuuZ9CnF5xzKkWX8HHv4FK3';
-const API_URL = 'https://api.mistral.ai/v1/chat/completions';
-
 interface PetInfo {
   name: string;
   type: string;
@@ -10,23 +7,6 @@ interface PetInfo {
 }
 
 export async function generatePetRecommendations(petInfo: PetInfo): Promise<string> {
-  const prompt = `Создай персонализированные рекомендации по уходу за питомцем:
-Имя: ${petInfo.name}
-Тип: ${petInfo.type}
-Порода: ${petInfo.breed}
-Возраст: ${petInfo.age}
-Вес: ${petInfo.weight}
-
-Рекомендации должны включать:
-1. Питание и диета
-2. Физическая активность
-3. Гигиена
-4. Здоровье и профилактика
-5. Особенности породы
-6. Возрастные особенности
-
-Пожалуйста, дай подробные, но понятные рекомендации, учитывающие все особенности питомца.`;
-
   // В реальном приложении здесь будет вызов OpenAI API
   // Пока возвращаем заглушку
   return `Рекомендации по уходу за ${petInfo.name}:
@@ -63,24 +43,6 @@ export async function generatePetRecommendations(petInfo: PetInfo): Promise<stri
 }
 
 export async function generatePetTasks(petInfo: PetInfo): Promise<string> {
-  const prompt = `Создай список ежедневных и еженедельных задач по уходу за питомцем:
-Имя: ${petInfo.name}
-Тип: ${petInfo.type}
-Порода: ${petInfo.breed}
-Возраст: ${petInfo.age}
-Вес: ${petInfo.weight}
-
-Задачи должны быть разделены по категориям:
-1. Кормление
-2. Физическая активность
-3. Гигиена
-4. Здоровье
-
-Каждая задача должна включать:
-- Описание
-- Частоту выполнения
-- Количество XP за выполнение`;
-
   // В реальном приложении здесь будет вызов OpenAI API
   // Пока возвращаем заглушку
   return `Задачи по уходу за ${petInfo.name}:

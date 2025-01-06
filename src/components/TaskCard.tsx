@@ -5,6 +5,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Camera, CheckCircle, X } from 'lucide-react';
 import { ActivityTimer } from './ActivityTimer';
+import Image from 'next/image';
+
+interface ActivityData {
+  duration: number;
+  distance?: number;
+  route?: google.maps.LatLng[];
+  pauseCount: number;
+  startTime: string;
+  endTime: string;
+}
 
 interface TaskCardProps {
   task: {
@@ -46,7 +56,7 @@ export function TaskCard({ task, onComplete }: TaskCardProps) {
     }
   };
 
-  const handleActivityComplete = (activityData: any) => {
+  const handleActivityComplete = (activityData: ActivityData) => {
     onComplete(task.id, {
       duration: activityData.duration,
       distance: activityData.distance,
@@ -77,7 +87,15 @@ export function TaskCard({ task, onComplete }: TaskCardProps) {
             <div className="flex flex-col items-center gap-2">
               {photo ? (
                 <div className="relative">
-                  <img src={photo} alt="Подтверждение" className="rounded-lg max-w-full h-auto" />
+                  {photo && (
+                    <Image 
+                      src={photo} 
+                      alt="Подтверждение" 
+                      width={400}
+                      height={300}
+                      className="rounded-lg max-w-full h-auto"
+                    />
+                  )}
                   <Button
                     variant="ghost"
                     size="icon"
@@ -106,7 +124,7 @@ export function TaskCard({ task, onComplete }: TaskCardProps) {
 
           {!task.requiresTimer && (
             <Button 
-              onClick={() => onComplete(task.id, { photo })}
+              onClick={() => onComplete(task.id, { photo: photo || undefined })}
               className="w-full"
               disabled={task.requiresPhoto && !photo}
             >

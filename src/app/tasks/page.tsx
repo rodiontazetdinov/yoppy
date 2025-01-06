@@ -17,9 +17,19 @@ interface Task {
   category: string;
 }
 
+interface PetInfo {
+  id: string;
+  name: string;
+  type: string;
+  breed: string;
+  age: string;
+  weight: string;
+  level: number;
+}
+
 export default function TasksPage() {
   const router = useRouter();
-  const [petInfo, setPetInfo] = useState<any>(null);
+  const [petInfo, setPetInfo] = useState<PetInfo | null>(null);
   const [recommendations, setRecommendations] = useState<string>('');
   const [tasks, setTasks] = useState<Task[]>([]);
   const [totalXP, setTotalXP] = useState(0);
@@ -38,7 +48,7 @@ export default function TasksPage() {
     const savedPets = localStorage.getItem('pets');
     if (savedPets) {
       const pets = JSON.parse(savedPets);
-      const currentPet = pets.find((pet: any) => pet.id === currentPetId);
+      const currentPet = pets.find((pet: PetInfo) => pet.id === currentPetId);
       if (currentPet) {
         setPetInfo(currentPet);
       }

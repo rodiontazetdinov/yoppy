@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Timer, Pause, Play, RotateCcw, MapPin } from 'lucide-react';
+import { Pause, Play, RotateCcw, MapPin } from 'lucide-react';
 import { RouteMap } from './RouteMap';
 
 interface ActivityTimerProps {

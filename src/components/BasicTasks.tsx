@@ -17,7 +17,7 @@ interface BasicTask {
   id: string;
   title: string;
   description: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   type: 'document' | 'shopping' | 'health';
   priority: 'high' | 'medium' | 'low';
   completed: boolean;

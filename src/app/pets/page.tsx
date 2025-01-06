@@ -20,12 +20,6 @@ interface Pet {
   level: number;
 }
 
-interface PetData {
-  pet: Pet;
-  recommendations: string;
-  tasks: string;
-}
-
 interface PetStatus {
   happiness: number;
   energy: number;
@@ -37,7 +31,6 @@ interface PetStatus {
 export default function PetsPage() {
   const router = useRouter();
   const [pets, setPets] = useState<Pet[]>([]);
-  const [selectedPet, setSelectedPet] = useState<string | null>(null);
   const [recommendations, setRecommendations] = useState<string>('');
   const [showRecommendations, setShowRecommendations] = useState(false);
   const [petStatuses, setPetStatuses] = useState<Record<string, PetStatus>>({});
@@ -62,7 +55,6 @@ export default function PetsPage() {
   }, []);
 
   const handlePetSelect = (petId: string) => {
-    setSelectedPet(petId);
     localStorage.setItem('currentPetId', petId);
     
     // Загружаем данные выбранного питомца

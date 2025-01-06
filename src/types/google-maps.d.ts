@@ -13,12 +13,23 @@ declare namespace google.maps {
     getZoom(): number;
   }
 
+  export interface MapStyle {
+    featureType?: string;
+    elementType?: string;
+    stylers: Array<{
+      color?: string;
+      visibility?: string;
+      weight?: number;
+      [key: string]: string | number | undefined;
+    }>;
+  }
+
   export interface MapOptions {
     center?: LatLng;
     zoom?: number;
     mapTypeId?: string;
     disableDefaultUI?: boolean;
-    styles?: any[];
+    styles?: MapStyle[];
   }
 
   export class Polyline {

@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Camera, Timer, MapPin, Bell, CheckCircle, Star, Heart } from 'lucide-react';
+import { Camera, Timer, MapPin, Bell, Star, Heart } from 'lucide-react';
 
 export function ActivityGuide() {
   return (

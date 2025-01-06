@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react';
 import { MobileLayout } from '@/components/layouts/MobileLayout';
 import { Card } from '@/components/ui/card';
-import { Medal, Star, Heart, Trophy, Target, Crown } from 'lucide-react';
+import { Star, Heart, Trophy, Target, Crown } from 'lucide-react';
 
 interface Achievement {
   id: string;
   title: string;
   description: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   progress: number;
   maxProgress: number;
   reward: number;

@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { MobileLayout } from '@/components/layouts/MobileLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, MessageCircle, Award, Trophy, Star, Target } from 'lucide-react';
+import { Heart, MessageCircle, Trophy, Star, Target } from 'lucide-react';
 
 interface FeedPost {
   id: string;

@@ -58,70 +58,12 @@ export default function TasksPage() {
     if (petCareData) {
       const { recommendations, tasks } = JSON.parse(petCareData);
       setRecommendations(recommendations);
-      // Парсим текст задач в структурированный формат
-      const parsedTasks = parseAITasks(tasks);
-      setTasks(parsedTasks);
+      // Задачи уже в нужном формате, не нужно парсить
+      setTasks(tasks);
     }
 
     setIsLoading(false);
   }, [router]);
-
-  // Функция для парсинга текста задач в структурированный формат
-  const parseAITasks = (tasksText: string): Task[] => {
-    const lines = tasksText.split('\n').filter(line => line.trim());
-    const tasks: Task[] = [];
-    let currentCategory = '';
-
-    lines.forEach(line => {
-      if (line.endsWith(':')) {
-        currentCategory = line.slice(0, -1);
-      } else if (line.match(/^\d+\./)) {
-        try {
-          // Формат: "1. Название (частота) - XP XP"
-          const parts = line.split('-').map(s => s.trim());
-          if (parts.length !== 2) {
-            console.warn('Неверный формат строки задачи:', line);
-            return;
-          }
-
-          const mainPart = parts[0]; // "1. Название (частота)"
-          const xpPart = parts[1]; // "50 XP"
-
-          // Извлекаем название и частоту
-          const matches = mainPart.match(/^\d+\.\s+(.+?)\s+\((.+?)\)$/);
-          if (!matches) {
-            console.warn('Не удалось извлечь название и частоту:', mainPart);
-            return;
-          }
-
-          const [, title, frequency] = matches;
-          
-          // Извлекаем число XP
-          const xp = parseInt(xpPart);
-
-          if (isNaN(xp)) {
-            console.warn('Не удалось извлечь XP из строки:', xpPart);
-            return;
-          }
-
-          tasks.push({
-            id: Math.random().toString(36).substr(2, 9),
-            title,
-            description: '',
-            frequency,
-            duration: '',
-            xp,
-            completed: false,
-            category: currentCategory
-          });
-        } catch (error) {
-          console.error('Ошибка при парсинге строки задачи:', line, error);
-        }
-      }
-    });
-
-    return tasks;
-  };
 
   const toggleTask = (taskId: string) => {
     setTasks(prevTasks => {

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { generatePetRecommendations, generatePetTasks } from '@/lib/ai';
 
 interface AddPetFormProps {
   isOpen: boolean;
@@ -39,23 +40,67 @@ export function AddPetForm({ isOpen, onClose, onSuccess }: AddPetFormProps) {
       console.log('Начинаем процесс добавления питомца:', petInfo);
       setIsLoading(true);
       
-      const response = await fetch('/api/generate-recommendations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(petInfo),
-      });
+      // Генерируем рекомендации и задачи напрямую через Mistral API
+      const [recommendations, tasksText] = await Promise.all([
+        generatePetRecommendations(petInfo),
+        generatePetTasks(petInfo)
+      ]);
 
-      console.log('Ответ от сервера:', response.status);
+      console.log('Сгенерированные рекомендации:', recommendations);
+      console.log('Исходный текст задач:', tasksText);
 
-      if (!response.ok) {
-        throw new Error('Failed to generate recommendations');
+      if (!tasksText || typeof tasksText !== 'string') {
+        throw new Error('Неверный формат задач от API');
       }
 
-      const data = await response.json();
-      console.log('Полученные данные:', data);
+      // Парсим задачи из текста
+      const categories = tasksText.split('\n\n').filter(Boolean);
+      console.log('Разделенные категории:', categories);
+
+      const tasks = categories
+        .filter(category => {
+          const lines = category.split('\n').filter(Boolean);
+          return lines.length >= 2; // Категория должна содержать название и хотя бы одну задачу
+        })
+        .flatMap(category => {
+          const lines = category.split('\n').filter(Boolean);
+          const categoryName = lines[0].replace(':', '').trim();
+          console.log(`Обработка категории "${categoryName}" с ${lines.length} строками`);
+          
+          return lines.slice(1)
+            .filter(line => {
+              const isTask = line.trim().match(/^\d+\./);
+              if (!isTask) {
+                console.log('Пропущена строка, не соответствующая формату задачи:', line);
+              }
+              return isTask;
+            })
+            .map(line => {
+              const match = line.match(/^\d+\.\s+(.+?)\s+\((.+?)\)\s+-\s+(\d+)\s+XP$/);
+              if (match) {
+                const task = {
+                  id: Math.random().toString(36).substr(2, 9),
+                  title: match[1].trim(),
+                  frequency: match[2].trim(),
+                  xp: parseInt(match[3]),
+                  category: categoryName,
+                  completed: false
+                };
+                console.log('Создана задача:', task);
+                return task;
+              }
+              console.log('Не удалось распарсить строку задачи:', line);
+              return null;
+            })
+            .filter(task => task !== null);
+        });
+
+      console.log('Распарсенные задачи:', tasks);
       
+      if (tasks.length === 0) {
+        throw new Error('Не удалось создать ни одной задачи из ответа API');
+      }
+
       // Загружаем существующих питомцев
       const savedPets = localStorage.getItem('pets');
       const pets = savedPets ? JSON.parse(savedPets) : [];
@@ -66,16 +111,19 @@ export function AddPetForm({ isOpen, onClose, onSuccess }: AddPetFormProps) {
         ...petInfo,
         level: 1
       };
+      console.log('Создан новый питомец:', newPet);
       
       // Добавляем нового питомца в список
       const updatedPets = [...pets, newPet];
       localStorage.setItem('pets', JSON.stringify(updatedPets));
       
       // Сохраняем данные питомца
-      localStorage.setItem(`petCareData_${newPet.id}`, JSON.stringify({
-        recommendations: data.recommendations,
-        tasks: data.tasks
-      }));
+      const petCareData = {
+        recommendations,
+        tasks
+      };
+      console.log('Сохраняем данные питомца:', petCareData);
+      localStorage.setItem(`petCareData_${newPet.id}`, JSON.stringify(petCareData));
       
       // Устанавливаем текущего питомца
       localStorage.setItem('currentPetId', newPet.id);

@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { PetStatus } from '@/components/PetStatus';
 import { Plus, Info } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { AddPetDialog } from '@/components/AddPetDialog';
 
 interface Pet {
   id: string;
@@ -40,6 +41,7 @@ export default function PetsPage() {
   const [recommendations, setRecommendations] = useState<string>('');
   const [showRecommendations, setShowRecommendations] = useState(false);
   const [petStatuses, setPetStatuses] = useState<Record<string, PetStatus>>({});
+  const [showAddPetDialog, setShowAddPetDialog] = useState(false);
 
   useEffect(() => {
     const savedPets = localStorage.getItem('pets');
@@ -86,10 +88,6 @@ export default function PetsPage() {
     }
   };
 
-  const addNewPet = () => {
-    router.push('/');
-  };
-
   const getTypeEmoji = (type: string) => {
     switch (type) {
       case 'dog': return '🐕';
@@ -104,7 +102,7 @@ export default function PetsPage() {
       <div className="container p-4">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Мои питомцы</h1>
-          <Button onClick={addNewPet} size="icon" variant="outline">
+          <Button onClick={() => setShowAddPetDialog(true)} size="icon" variant="outline">
             <Plus className="w-5 h-5" />
           </Button>
         </div>
@@ -157,7 +155,7 @@ export default function PetsPage() {
               <p className="text-muted-foreground mb-4">
                 У вас пока нет питомцев
               </p>
-              <Button onClick={addNewPet}>
+              <Button onClick={() => setShowAddPetDialog(true)}>
                 Добавить питомца
               </Button>
             </Card>
@@ -178,6 +176,11 @@ export default function PetsPage() {
             </div>
           </DialogContent>
         </Dialog>
+
+        <AddPetDialog 
+          open={showAddPetDialog} 
+          onOpenChange={setShowAddPetDialog} 
+        />
       </div>
     </MobileLayout>
   );
